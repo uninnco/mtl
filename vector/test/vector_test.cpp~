@@ -1,0 +1,60 @@
+#include <iostream>
+#include "cpptest.h"
+#include "vector.h"
+
+using namespace mtl;
+
+class VectorTest:public Test::Suite
+{
+public:
+    VectorTest() {
+        TEST_ADD(VectorTest::Init);
+	TEST_ADD(VectorTest::push_back);
+    }
+private:
+    void Init() {
+        vector<int> v;
+        TEST_ASSERT_MSG(v.size() == 0,"向量初始大小为0");
+        TEST_ASSERT_MSG(v.capacity() == 0,"向量初始容量为0");
+    }
+    void push_back(){
+	vector<int> v;
+	push_back(10);
+        TEST_ASSERT_MSG(v.size() == 1,"向量大小为1");
+        TEST_ASSERT_MSG(v.capacity() == 1,"向量容量为1");
+    }
+    void at(){
+	vector<int> v;
+	push_back(10);
+	TEST_ASSERT(v.at(0) == 10);
+        TEST_ASSERT_MSG(v.size() == 1,"向量大小为1");
+	push_back(11);
+	TEST_ASSERT(v.at(1) == 11);
+        TEST_ASSERT_MSG(v.size() == 2,"向量大小为2");
+    }
+    void pop_back(){
+	vector<int> v;
+	push_back(1);
+	push_back(2);
+	push_back(3);
+	push_back(4);
+        TEST_ASSERT_MSG(v.size() == 4,"向量大小为4");
+	v.pop_back();
+        TEST_ASSERT_MSG(v.size() == 3,"向量大小为3");
+	TEST_ASSERT(v.at(0) == 1);
+	TEST_ASSERT(v.at(1) == 2);
+	TEST_ASSERT(v.at(2) == 3);
+	TEST_THROW(v.at(3),out_of_range());
+    }
+}
+
+int main()
+{
+
+    VectorTest test;
+   // Test::TextOutput output(Test::TextOutput::Terse);
+    //Test::TextOutput output(Test::TextOutput::Verbose);
+    Test::HtmlOutput output;
+    test.run(output,true);
+    output.generate(std::cout, true, "VectorTest");
+}
