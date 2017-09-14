@@ -1,0 +1,603 @@
+#include <iostream>
+#include <cstring>
+#include <sstream>
+#include "../include/string.h"
+#include "../include/stdexcept.h"
+
+namespace mtl
+{
+using namespace std;
+using mtl::string;
+using std::reverse_iterator;
+string::string():str_(NULL),size_(0) {}
+string::string(char const* str /* = NULL*/):str_(NULL),size_(0)
+{
+    if(NULL!= str) {
+        size_=  strlen(str);
+        //	str_= const_cast<char*>(str);
+        str_= new char [size_+1];
+        strncpy(str_,str,size_);
+    }
+}
+string::string(const string& str,size_t pos,size_t n):str_(NULL),size_(n)
+{
+    if(NULL!=str.c_str()) {
+        if(pos> str.size_) {
+            throw out_of_range("out of copy_string's range");
+        }
+        str_=new char[size_+1];
+        for(size_t i = 0; i < n; i++) {
+            str_[i]= str.str_[i+pos];
+        }
+        str_[size_] = '\0';
+
+    }
+}
+string::string(const char* s,size_t n)
+{
+    if(NULL!= s) {
+        size_= n;
+        str_= new char[size_ + 1];
+        strncpy(str_,s,size_);
+        str_[size_] = '\0';
+    }
+}
+string::string(size_t n,char c)
+{
+    size_= n;
+    str_= new char[size_ + 1];
+    for(size_t i = 0; i < size_; i++) {
+        str_[i]= c;
+    }
+    str_[size_] = '\0';
+}
+
+string::~string()
+{
+    if(NULL!= str_) {
+        delete [] str_;
+        str_= NULL;
+    }
+}
+string::string(string const& s):str_(s.str_),size_(s.size_)
+{
+    if(NULL!= str_ ) {
+        str_= new char[size_+1];
+        strncpy(str_,s.str_,size_);
+    }
+}
+string& string::assign(string const& s)
+{
+    if(this== &s) {
+        return *this;
+    }
+    delete [] str_;
+    str_= NULL;
+    size_= s.size_;
+
+    if(NULL != s.str_) {
+        str_= new char[size_ + 1];
+        strncpy(str_,s.str_,size_);
+    }
+    return *this;
+}
+ostream& operator <<(ostream& os,string const& s)
+{
+    os<< s.str_;
+    return os;
+}
+char& string::at(size_t pos)
+{
+    if(NULL== str_) {
+        throw domain_error("str is NULL");
+    }
+    if(pos< 0 || pos > size_ - 1) {
+        throw out_of_range("out of string size");
+    }
+    return str_[pos];
+
+}
+const char& string::at(size_t pos)const
+{
+    return at(pos);
+}
+const char* string::c_str()const
+{
+    return str_;
+}
+string& string::operator=(string const& str)
+{
+
+    if(this!= &str) {
+        if(str_ != NULL) delete [] str_;
+        size_= str.size();
+        str_= new char[size_+1];
+        strncpy(str_,str.c_str(),(size_));
+    }
+    return *this;
+}
+string& string::operator=(const char* str)
+{
+
+    return *this = string(str);
+}
+string& string::operator=(char str)
+{
+    return *this = string(1,str);
+}
+string operator+(string const& lhs,string const& rhs)
+{
+    if(NULL== lhs.c_str() and NULL == rhs.c_str()) {
+        return NULL;
+    }
+    if(NULL== lhs.c_str()) {
+        return rhs;
+    }
+    if(NULL== rhs.c_str()) {
+        return lhs;
+    }
+    char* temp = new char[lhs.size_+rhs.size_+1];
+    //cout << "  "<< lhs.size_<< " " << rhs.size_<<endl;
+    /*ostringstream oss;
+    oss << lhs.str_ << rhs.str_;
+    cout << "oss : " << strlen(oss.str().c_str())+1<<endl;
+    strncpy(temp,oss.str().c_str(),(lhs.size_+rhs.size_));
+    */
+    strncpy(temp,lhs.str_,lhs.size_);
+    strncat(temp,rhs.str_,rhs.size_);
+    string t(temp);
+    delete temp;
+    temp = NULL;
+    return t;
+}
+string operator+(const char* lhs,string const& rhs)
+{
+    return (string(lhs)+rhs);
+}
+string operator+(char lhs,string const& rhs)
+{
+
+    return (string(1,lhs)+rhs);
+}
+string operator+(string const& lhs,const char* rhs)
+{
+    return (lhs + string(rhs));
+}
+string operator+(string const& lhs,char rhs)
+{
+    return (lhs + string(1,rhs));
+}
+
+char& string::operator[](size_t pos)
+{
+    return at(pos);
+}
+const char& string::operator[](size_t pos)const
+{
+    return at(pos);
+}
+string& string::operator+=(const string& str)
+{
+    *this= (*this)+str;
+    return *this;
+}
+string& string::operator+=(const char* str)
+{
+    return (*this+=string(str));
+}
+string& string::operator+=(char str)
+{
+    return (*this+=string(1,str));
+}
+size_t string::size()const
+{
+    return size_;
+}
+void string::resize(size_t n,char c)
+{
+    if(n< size_) {
+        str_[n-1]= '\0';
+        size_= n;
+    }
+    if(n> size_) {
+        char* temp = new char[n+1];
+        strcpy(temp,str_);
+        delete [] str_;
+        str_ = NULL;
+        for(size_t i = size_-1; i < n; i++ ) {
+            temp[i]= c;
+        }
+        temp[n] = '\0';
+        size_= n;
+        str_= temp;
+    }
+}
+
+void string::resize(size_t n)
+{
+    if(n< size_) {
+        str_[n-1]= '\0';
+        size_ = n;
+    }
+    if(str_ == NULL) {
+        char* temp = new char[n+1];
+        str_ = temp;
+        size_ = n;
+    }
+    if(n> size_) {
+        char* temp = new char[n+1];
+        strcpy(temp,str_);
+        delete [] str_;
+        str_ = NULL;
+        for(size_t i = size_; i < n; i++ ) {
+            temp[i]= '\0';
+        }
+        size_= n;
+        str_= temp;
+    }
+}
+size_t string::length()const
+{
+    return size_;
+}
+string& string::append(string const& str)
+{
+    return *this += str;
+}
+string& string::append(string const& str,size_t subpos,size_t sublen)
+{
+    return *this+=string(str,subpos,sublen);
+}
+string string::substr(size_t pos,size_t len)const
+{
+    if(pos> size_) {
+        return string();
+    }
+    char temp[len];
+    for(size_t i = 0; i < len; i++) {
+        temp[i]= str_[i+pos];
+    }
+    temp[len] = '\0';
+
+    return string(temp);
+}
+bool string::empty()const
+{
+    return size_ == 0;
+}
+string& string::erase(size_t pos,size_t n)
+{
+    if(pos>= size_) {
+        throw out_of_range("out of string's size");
+    }
+    for(size_t i = pos+n; i < size_; i++) {
+        str_[pos]= str_[i];
+        pos++;
+    }
+    size_= size_ - n;
+    resize(size_);
+    str_[size_]= '\0';
+    return *this;
+}
+bool string::operator==(string const& s)
+{
+    if(strcmp(str_,s.str_)==0)return true;
+    else return false;
+}
+bool string::operator!=(string const& s)
+{
+    return !(*this == s);
+}
+bool string::operator>=(string const& s)
+{
+    int res = strcmp(str_,s.str_);
+    if(res==0 or res > 0) {
+        return true;
+    } else
+        return false;
+}
+
+bool string::operator<=(string const& s)
+{
+    int res = strcmp(str_,s.str_);
+    if(res==0 or res < 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+string& string::insert(size_t pos1,string const& str)
+{
+    if(pos1> size_)  throw out_of_range("out of string's size");
+    size_+= str.size_;
+    resize(size_);
+    char*temp = new char[size_ - pos1 + 2];
+    strcpy(temp,str_+pos1);
+    str_[pos1]= '\0';
+    strcat(str_,str.str_);
+    strcat(str_,temp);
+    delete[] temp;
+    temp = NULL;
+    return*this;
+}
+string& string::insert(size_t pos1,const string& str,size_t pos2,size_t n)
+{
+    if(pos1> size_) throw out_of_range("out of string's size");
+    if(pos2> str.size_||n > str.size_ -pos2) throw out_of_range("out of insert_string's size");
+
+    size_+= n;
+    resize(size_);
+    char*temp = new char[size_ -pos1 + 2];
+    strcpy(temp,str_+pos1);
+    str_[pos1]= '\0';
+    strncat(str_,str.str_+pos2,n);
+    strcat(str_,temp);
+    delete[] temp;
+    temp = NULL;
+    return*this;
+    //return insert(pos1,string(str,pos2,n));
+}
+string& string::insert(size_t pos1,const char* s,size_t n)
+{
+
+    return insert(pos1,string(s,n));
+}
+string& string::insert(size_t pos1,const char* s)
+{
+    return insert(pos1,string(s));
+}
+string& string::insert(size_t pos1,size_t n,char c)
+{
+    return insert(pos1,string(n,c));
+}
+string& string::replace(size_t pos1,size_t n1,const string& str)
+{
+    if(pos1> size_)  throw out_of_range("out of string's size");
+    resize(size_-n1+str.size_);
+    char*temp = new char[size_ -pos1 -n1 +2];
+    strcpy(temp,str_+pos1+n1);
+    str_[pos1]= '\0';
+    strcat(str_,str.str_);
+    strcat(str_,temp);
+    delete[] temp;
+    temp = NULL;
+    return *this;
+}
+string& string::replace(size_t pos1,size_t n1,const string& str,size_t pos2,size_t n2)
+{
+    if(pos1> size_) throw out_of_range("out of string's size");
+    if(pos2> str.size_||n2 > str.size_ -pos2) throw out_of_range("out of string::replace_string's size");
+    resize(size_-n1+n2);
+    char*temp = new char[size_ -pos1 -n1 +2];
+    strcpy(temp,str_+pos1+n1);
+    str_[pos1]= '\0';
+    strncat(str_,str.str_+pos2,n2);
+    strcat(str_,temp);
+    delete[] temp;
+    temp = NULL;
+    return *this;
+}
+string& string::replace(size_t pos1,size_t n1,const char* s,size_t n2)
+{
+    string t(s,n2);
+    return replace(pos1,n1,string(s,n2));
+}
+string& string::replace(size_t pos1,size_t n1,size_t n2,char c)
+{
+    return replace(pos1,n1,string(n2,c));
+}
+void string::clear()
+{
+    memset(str_,'\0',size_);
+    resize(0);
+
+
+
+}
+/**
+ *迭代器类成员函数实现
+ */
+string::iterator::iterator(char* it):it_(it) {}
+char& string::iterator::operator*()
+{
+    return *it_;
+}
+char* string::iterator::operator->()
+{
+    return it_;
+}
+string::iterator& string::iterator::operator ++()
+{
+    ++it_;
+    return *this;
+}
+string::iterator& string::iterator::operator--()
+{
+    --it_;
+    return *this;
+}
+string::iterator string::iterator::operator++(int)
+{
+    iterator temp(*this);
+    ++it_;
+    return temp;
+}
+string::iterator string::iterator::operator--(int)
+{
+    iterator temp(*this);
+    --it_;
+    return temp;
+}
+bool string::iterator::operator==(iterator const& right)const
+{
+    return it_== right.it_;
+}
+bool string::iterator::operator!=(iterator const& right)const
+{
+    return !(*this == right);
+}
+/*begin end cbegin cend*/
+string::iterator string::begin()
+{
+    return iterator(str_);
+}
+string::iterator string::end()
+{
+    return iterator(str_+size_);
+}
+/*	const string::iterator string::begin(){
+		return iterator(str_);
+	}
+	const string::iterator string::end(){
+		return iterator(str_+size_);
+	}	*/
+
+/**
+ *反向迭代器类成员函数实现
+ */
+string::reverse_iterator::reverse_iterator(char* rit):rit_(rit) {}
+char& string::reverse_iterator::operator*()
+{
+    return *rit_;
+}
+char* string::reverse_iterator::operator->()
+{
+    return rit_;
+}
+string::reverse_iterator& string::reverse_iterator::operator ++()
+{
+    --rit_;
+    return *this;
+}
+string::reverse_iterator& string::reverse_iterator::operator--()
+{
+    ++rit_;
+    return *this;
+}
+string::reverse_iterator string::reverse_iterator::operator++(int)
+{
+    reverse_iterator temp(*this);
+    --rit_;
+    return temp;
+}
+string::reverse_iterator string::reverse_iterator::operator--(int)
+{
+    reverse_iterator temp(*this);
+    ++rit_;
+    return temp;
+}
+bool string::reverse_iterator::operator==(reverse_iterator const& right)const
+{
+    return rit_== right.rit_;
+}
+bool string::reverse_iterator::operator!=(reverse_iterator const& right)const
+{
+    return !(*this == right);
+}
+
+
+/*string成员函数*/
+string::reverse_iterator string::rbegin()
+{
+    //	for(size_t i =0; i < size_ ; i++){cout <<str_[i] <<endl;}
+    return reverse_iterator(str_+size_-1);
+}
+string::reverse_iterator string::rend()
+{
+    return reverse_iterator(str_-1);
+}
+void string::push_back(char c)
+{
+    resize(size_+1);
+    str_[size_ -1] = c;
+}
+size_t string::find(const string& str,size_t pos)const
+{
+    if(pos > size_)  throw out_of_range("error: pos > string's size");
+    char* locate = strstr(str_+ pos, str.str_);
+    char* begin = str_;
+    for(size_t i = 0; i < size_; i++) {
+        if(begin == locate) {
+            return i;
+        }
+        begin++;
+    }
+    return npos;
+}
+size_t string::find(const char* str,size_t pos,size_t n)const
+{
+    /* if(pos > size_)  throw out_of_range("error: pos > string's size");
+     string(str,0,n);
+     cout << "  "<< string(str,0,n) << endl;
+     char* locate = strstr(str_+pos, str);
+     if(locate == NULL) {
+         cout << "failed";
+     }
+     char* begin = str_;
+     for(size_t i = 0; i < size_; i++) {
+         if(begin == locate) {
+             return i;
+         }
+     }
+     return npos;*/
+    //cout << "string:  " << string(str,n) <<endl;
+    return find(string(str,n),pos);
+}
+size_t string::find(const char* str,size_t pos) const
+{
+    /*	if(pos > size_)   throw out_of_range("error: pos > string's size");
+    	char* locate = strstr(str_+pos , str);
+    	char* begin = str_;
+    	for(size_t i = 0; i < size_; i++){
+    		if(begin == locate){
+    			return i;
+    		}
+    	}
+    	return npos;*/
+    return find(string(str),pos);
+}
+size_t string::find(char c,size_t pos) const
+{
+    /*	if(pos > size_)   throw out_of_range("error: pos > string's size");
+    	char* locate = strstr(str+pos, &c);
+    	char* begin = str_;
+    	for(size_t i = 0; i < size_; i++){
+    		if(begin == lcoate){
+    			return i;
+    		}
+    	}*/
+    return find(string(1,c),pos);
+}
+int string::compare(string const& str) const
+{
+    return strcmp(str_,str.str_);
+}
+int string::compare(const char* str) const
+{
+    return strcmp(str_,str);
+}
+int string::compare(size_t pos1,size_t n1,const string& str)const
+{
+    if(pos1 > size_) {
+        throw out_of_range("compared pos>size");
+    }
+    return string(*this,pos1,n1).compare(str);
+}
+int string::compare(size_t pos1,size_t n1,const char* str)const
+{
+    return string(*this,pos1,n1).compare(string(str));
+}
+int string::compare(size_t pos1,size_t n1,const string& str,size_t pos2,size_t n2)const
+{
+    if(pos2 > str.size_) {
+        throw out_of_range("compare str pos > size");
+    }
+    return string(*this,pos1,n1).compare(string(str,pos2,n2));
+}
+int  string::compare(size_t pos1,size_t n1,const char* str,size_t pos2,size_t n2)const
+{
+    return string(*this,pos1,n1).compare(string(str,pos2,n2));
+}
+
+
+}

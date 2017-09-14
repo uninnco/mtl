@@ -1,0 +1,454 @@
+#pragma once
+#include <iostream>
+/**
+ * @file string.h
+ * @brief 仿stl标准库string实现
+ * @details 用于字符串处理
+ * @version 1.0
+ * @author ronglifei
+ * @date 2017-8-9
+ */
+namespace mtl
+{
+using std::ostream;
+/**
+ * @brief string 类实现
+ */
+class string
+{
+public:
+    /**
+     * @brief 默认构造函数
+     */
+    string();
+    /**
+     * @brief copy构造函数
+     * @prama str string(下文中所有string均为mtl::string)对象
+     */
+    string(const string& str);
+    /**
+     * @brief 构造函数 字符串进行构造
+     * @prama str 字符串
+     */
+    string(char const* str);
+    /**
+     * @brief 构造函数 字符串构造，从字符串pos位置开始，长度为n
+     * @prama str 字符串
+     * @prama pos 位置
+     * @prama n 长度（默认为size_t -1）
+     */
+    string(const string& str,size_t pos,size_t n = npos);
+    /**
+     * @brief 构造函数 字符串构造，字符串前n个字符
+     * @prama str 字符串
+     * @prama n 长度
+     */
+    string(const char* s,size_t n);
+    /**
+     * @brief 构造函数，以n个字符c构造
+     * @prama n 字符个数
+     * @prama c 字符
+     */
+    string(size_t n,char c);
+    /**
+     * @brief 析构函数
+     */
+    ~string();
+    /**
+     * @brief 把string s赋给当前string
+     * @prama s 输入的string
+     * @return 修改后的string
+     */
+    string& assign(string const& s);
+    /**
+     * @brief 重载<<运算符
+     */
+    friend ostream& operator<<(ostream& os,string const& s);
+    /**
+     * @brief 返回当前string中第pos个字符，提供范围检查，当越界时会抛出out_of_range异常，为空时抛出domain_error
+     * @prama pos 字符位置
+     */
+    char& at(size_t pos);
+
+    /**
+     * @brief 返回const类型当前string中第pos个字符，提供范围检查，当越界时会抛出out_of_range异常，为空时抛出domain_error
+     * @prama pos 字符位置
+     */
+    const char& at ( size_t pos ) const;
+    /**
+     * @brief 返回一个以NULL结尾的字符串
+     */
+    const char* c_str()const;
+    /**
+     * @brief 重载运算符=
+     * @prama s string类型对象
+     */
+    string& operator = (string const& s);
+    /**
+     * @brief 重载运算符=
+     * @prama s 字符串
+     */
+    string& operator = (const char* s);
+    /**
+     * @brief 重载运算符=
+     * @prama s 字符
+     */
+    string& operator = (char s);
+    /**
+     * @brief 重载运算符+
+     * @prama lhs +左边的string
+     * @prama rhs +右边的string
+     * @return 一个由lhs+rhs的新的string
+     */
+    friend string operator+(string const& lhs,string const& rhs);
+    /**
+     * @brief 重载运算符+
+     * @prama lhs +左边的字符串
+     * @prama rhs +右边的string
+     * @return 一个由lhs+rhs的新的string
+     */
+    friend string operator+(const char* lhs,string const& rhs);
+    /**
+     * @brief 重载运算符+
+     * @prama lhs +左边的字符
+     * @prama rhs +右边的string
+     * @return 一个由lhs+rhs的新的string
+     */
+    friend string operator+(char lhs,string const& rhs);
+    /**
+     * @brief 重载运算符+
+     * @prama lhs +左边的string
+     * @prama rhs +右边的字符串
+     * @return 一个由lhs+rhs的新的string
+     */
+    friend string operator+(string const& lhs,const char* rhs);
+    /**
+     * @brief 重载运算符+
+     * @prama lhs +左边的string
+     * @prama rhs +右边的字符
+     * @return 一个由lhs+rhs的新的string
+     */
+    friend string operator+(string const& lhs,char rhs);
+    /**
+     * @brief 返回当前string中第pos个字符
+     * @prama pos 字符位置
+     */
+    char& operator[](size_t pos);
+    /**
+     * @brief 返回const类型当前string中第pos个字符
+     * @prama pos 字符位置
+     */
+    const char& operator[](size_t pos)const;
+    /**
+     * @brief 当前string和str相加
+     * @prama str string对象
+     * @return 修改后的当前string
+     */
+    string& operator+=(const string& str);
+    /**
+     * @brief 当前string和s相加
+     * @prama s 字符串
+     * @return 修改后的当前string
+     */
+    string& operator+=(const char* s);
+    /**
+     * @brief 当前string和c相加
+     * @prama c 字符
+     * @return 修改后的当前string
+     */
+    string& operator+=(char c);
+    /**
+     * @brief 返回string的大小
+     */
+    size_t size()const;
+    /**
+     * @breif 设置string大小，不足的用字符c补齐
+     * @return string的大小
+     */
+    void resize (size_t n,char c);
+    /**
+     * @breif 设置string大小，不足的用NULL补齐
+     */
+    void resize (size_t n);
+    /**
+     * @brief 返回string的大小
+     * @return string的大小
+     */
+    size_t length()const;
+    /**
+     * @brief 同operator+=()
+     * @return 修改后的string
+     */
+    string& append(string const& str);
+    /**
+     * @brief 把string s中从subpos开始的sublen个字符连接到当前字符串的结尾
+     * @prama str string对象
+     * @prama subpos str的起始位置
+     * @prama sublen str的字符个数
+     * @return 修改后的string
+     */
+    string& append(string const& str,size_t subpos,size_t sublen);
+    /**
+     * @brief 返回pos开始的n个字符组成的const string
+     * @prama pos 返回string的起始位置，默认为0
+     * @prama len 返回string的字符个数，默认为npos
+     * @return const string子串
+     */
+    string substr (size_t pos = 0, size_t len = npos) const;
+    /**
+     * @brief 判断string是否为空
+     * @return 为空返回true，反之false
+     */
+    bool empty()const;
+    /**
+     * @brief 删除当前string从pos开始，长度为n的字符
+     * @prama pos 删除的起始位置 默认为0
+     * @prama n 删除的长度 默认为npos
+     * @return 删除后的当前string
+     */
+    string& erase(size_t pos = 0,size_t n = npos);
+    /**
+     * @brief 重载==
+     * @prama s string对象
+     * @return 相等返回true，反之false
+     */
+    bool operator==(string const& s);
+    /**
+     * @brief 重载!=
+     * @prama s string对象
+     * @return 不相等返回true，反之false
+     */
+    bool operator!=(string const& s);
+    /**
+     * @brief 重载>=
+     * @prama s string对象
+     * @return 大于等于返回true，反之false
+     */
+    bool operator>=(string const& s);
+    /**
+     * @brief 重载<=
+     * @prama s string对象
+     * @return 小于等于返回true，反之false
+     */
+    bool operator<=(string const& s);
+    /**
+     * @brief 在当前的string从pos1位置开始，插入str的所有字符
+     * @prama pos1 插入的起始位置
+     * @prama str 插入的string
+     * @return 修改后的当前string
+     */
+    string& insert(size_t pos1, string const& str);
+    /**
+     * @brief 在当前的string从pos1位置开始，插入str的从pos2开始的前n个字符
+     * @prama pos1 插入的起始位置
+     * @prama str 插入的string
+     * @prama pos2 str的起始位置
+     * @prama n 插入的字符数
+     * @return 修改后的当前string
+     */
+    string& insert(size_t pos1, const string& str,size_t pos2,size_t n);
+    /**
+     * @brief 在当前string从pos1位置开始，插入s的前n个字符
+     * @prama pos1 插入的起始位置
+     * @prama s 插入的字符串
+     * @prama n 插入的字符数
+     * @return 修改后的当前string
+     */
+    string& insert(size_t pos1, const char* s,size_t n);
+    /**
+     * @brief 在当前string从pos1位置开始，插入s字符串
+     * @prama pos1 插入的起始位置
+     * @prama s 插入的字符串
+     * @return 修改后的当前string
+     */
+    string& insert(size_t pos1, const char* s);
+    /**
+     * @brief 在当前string从pos1位置开始，插入n个字符c
+     * @prama pos1 插入的起始位置
+     * @prama c 插入的字符
+     * @prama n 插入的字符数
+     * @return 修改后的当前string
+     */
+    string& insert(size_t pos1,size_t n,char c);
+    /**
+     * @brief 在当前string从pos1位置开始，删除n1个字符，并插入str的所有字符
+     * @prama pos1 删除和插入的起始位置
+     * @prama n1 删除多少个字符
+     * @prama str 插入的string
+     * @return 修改后的当前string
+     */
+    string& replace(size_t pos1,size_t n1, const string& str);
+    /**
+     * @brief 在当前string从pos1位置开始，删除n1个字符，并插入str从pos2开始的n2个字符
+     * @prama pos1 删除和插入的起始位置
+     * @prama n1 删除多少个字符
+     * @prama str 插入的string
+     * @prama pos2 str2的起始位置
+     * @prama n2 插入多少个字符
+     * @return 修改后的当前string
+     */
+    string& replace(size_t pos1, size_t n1,const string& str,size_t pos2,size_t n2);
+    /**
+     * @brief 在当前string从pos1位置开始，删除n1个字符，并插入s的n2个字符
+     * @prama pos1 删除和插入的起始位置
+     * @prama n1 删除多少个字符
+     * @prama s 插入的字符串
+     * @prama n2 插入多少个字符
+     * @return 修改后的当前string
+     */
+    string&	replace(size_t pos1,size_t n1,const char* s,size_t n2);
+    /**
+     * @brief 在当前string从pos1位置开始，删除n1个字符，并插入c的n2个字符
+     * @prama pos1 删除和插入的起始位置
+     * @prama n1 删除多少个字符
+     * @prama c 插入的字符串
+     * @prama n2 插入多少个字符
+     * @return 修改后的当前string
+     */
+    string& replace(size_t pos1,size_t n1,size_t n2,char c);
+    /**
+     * @brief 清空string，并将大小设置为0
+     */
+    void clear();
+    /**
+     * @brief 在当前string尾部插入一个字符c
+     * @prama c 字符
+     */
+    void push_back(char c);
+    /**
+     * @brief 在当前string中从pos开始查找string子串str
+     * @prama str string对象
+     * @prama pos 当前string的查找起始位置
+     * @return 查找到子串的起始位置
+     */
+    size_t find(const string& str,size_t pos)const;
+    /**
+     * @brief 在当前string中从pos开始查找字符串str的前n个字符
+     * @prama str 字符串
+     * @prama pos 当前string的查找起始位置
+     * @prama n 查找的字符个数
+     * @return 查找到子串的起始位置
+     */
+    size_t find(const char* str,size_t pos,size_t n)const;
+    /**
+     * @brief 在当前string中从pos开始查找字符串str
+     * @prama str 字符串
+     * @prama pos 当前string的查找起始位置
+     * @return 查找到子串的起始位置
+     */
+    size_t find(const char* str,size_t pos) const;
+    /**
+     * @brief 在当前string中从pos开始查找字符c
+     * @prama c 字符
+     * @prama pos 当前string的查找起始位置
+     * @return 查找到子串的起始位置
+     */
+    size_t find(char c,size_t pos) const;
+    /**
+     * @brief 将当前string和输入的string比较
+     * @prama str string对象
+     * @return 相等返回0，否则返回非0
+     */
+    int compare(const string& str) const;
+    /**
+     * @brief 将当前strng和输入的字符串比较
+     * @prama str const char*字符串
+     * @return 相等返回0，否则返回非0
+     */
+    int compare(const char* str) const;
+    /**
+     * @brief  将当前string从pos1位置开始长度为n1的字符串和输入的string str比较 
+     * @prama pos1 当前string的起始位置
+     * @prama n1 从起始位置开始的长度
+     * @prama str string对象
+     * @return 相等返回0,否则返回非0
+     */
+    int compare(size_t pos1,size_t n1,const string& str)const;
+    /**
+     * @brief  将当前string从pos1位置开始长度为n1的字符串和输入的字符串str比较 
+     * @prama pos1 当前string的起始位置
+     * @prama n1 从起始位置开始的长度
+     * @prama str const char* 字符串
+     * @return 相等返回0,否则返回非0
+     */
+    int compare(size_t pos1,size_t n1,const char* str)const;
+    /**
+     * @brief  将当前string从pos1位置开始长度为n1的字符串和输入的string对象str从pos2开始长度为n2的字符串比较 
+     * @prama pos1 当前string的起始位置
+     * @prama n1 从起始位置开始的长度
+     * @prama str string对象
+     * @prama pos2 str的起始位置
+     * @prama n2 str的长度
+     * @return 相等返回0,否则返回非0
+     */
+    int compare(size_t pos1,size_t n1,const string& str,size_t pos2,size_t n2)const;
+    /**
+     * @brief  将当前string从pos1位置开始长度为n1的字符串和输入的字符串str从pos2开始长度为n2的字符串比较 
+     * @prama pos1 当前string的起始位置
+     * @prama n1 从起始位置开始的长度
+     * @prama str const char* 字符串
+     * @prama pos2 str的起始位置
+     * @prama n2 str的长度
+     * @return 相等返回0,否则返回非0
+     */
+    int compare(size_t pos1,size_t n1,const char* str,size_t pos2,size_t n2)const;
+    /**
+     * @brief 迭代器类
+     */
+    class iterator
+    {
+    public:
+        iterator(char* it);
+        char& operator*();
+        char* operator->();
+        iterator& operator ++();
+        iterator& operator--();
+        iterator operator++(int);
+        iterator operator--(int);
+        bool operator==(iterator const& right)const;
+        bool operator!=(iterator const& right)const;
+    private:
+        char* it_;
+    };
+    /**
+     * @brief 反向迭代器类
+     */
+    class reverse_iterator
+    {
+    public:
+        reverse_iterator(char* rit);
+        char* operator->();
+        char& operator *();
+        reverse_iterator& operator ++();
+        reverse_iterator& operator--();
+        reverse_iterator operator++(int);
+        reverse_iterator operator--(int);
+        bool operator==(reverse_iterator const& right)const;
+        bool operator!=(reverse_iterator const& right)const;
+    private:
+        char* rit_;
+    };
+    /**
+     * @brief 返回迭代器类型，指向string起始位置
+     */
+    iterator begin();
+    /**
+     * @brief 返回迭代器类型，指向string尾部位置的下一个位置
+     */
+    iterator end();
+    /**
+     * @brief 返回反向迭代器类型，指向string尾部位置
+     */
+    reverse_iterator rbegin();
+    /**
+     * @brief 返回反向迭代器类型，指向string起始位置的前一个
+     */
+    reverse_iterator rend();
+
+private:
+    char* str_; ///<储存字符串
+    size_t size_;///<string的大小
+    static const long npos = -1;///<储存size_t -1
+
+};
+}
